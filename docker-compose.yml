@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: safecall_db
+    restart: always
+    environment:
+      POSTGRES_USER: valter_admin
+      POSTGRES_PASSWORD: bradesco_seguro_2026
+      POSTGRES_DB: safecall_bradesco
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d/ # Executa seus scripts .sql automaticamente
