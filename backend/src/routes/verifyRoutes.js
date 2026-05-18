@@ -2,15 +2,10 @@ const express = require('express')
 
 const router = express.Router()
 
-router.get('/verify/:phone', (req, res) => {
+const {
+    verifyPhone
+} = require('../controllers/verifyController')
 
-    const { phone } = req.params
-
-    res.json({
-        success: true,
-        phone,
-        status: 'safe'
-    })
-})
+router.get('/verify/:phone', verifyPhone)
 
 module.exports = router
