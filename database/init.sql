@@ -15,3 +15,13 @@ CREATE TABLE fraud_reports (
     message TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+INSERT INTO official_numbers (phone_number, channel_name, description)
+VALUES
+    ('40020022', 'Central Bradesco', 'Central oficial de atendimento Bradesco'),
+    ('08005700022', 'SAC Bradesco', 'Servico de atendimento ao consumidor Bradesco')
+ON CONFLICT (phone_number) DO NOTHING;
+
+INSERT INTO fraud_reports (reporter_name, reporter_email, reported_phone, message)
+VALUES
+    ('Cliente Teste', 'cliente.teste@email.com', '11999999999', 'Numero ficticio usado para demonstrar tentativa de golpe');
