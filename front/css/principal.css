@@ -1,0 +1,234 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ============================================================
+   BASE — Desktop / Tablet: exibe o "mockup de celular"
+   ============================================================ */
+
+body {
+    background: #0f172a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* 📱 MOCKUP CELULAR */
+.phone {
+    width: 380px;
+    height: 720px;
+    background: #f8fafc;
+    border-radius: 30px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* 🔴 TOP BAR */
+.top-bar {
+    background: #c8102e;
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo {
+    width: 3rem;
+}
+
+/* 📄 CONTEÚDO */
+.content {
+    padding: 20px;
+    overflow-y: auto;
+    height: calc(100% - 90px);
+}
+
+h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #111827;
+}
+
+label {
+    font-size: 13px;
+    color: #374151;
+    display: block;
+    margin-top: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    outline: none;
+    font-size: 13px;
+}
+
+input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* BOTÃO VERIFICAR */
+.btn-check {
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: #2563eb;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-check:hover {
+    background: #1d4ed8;
+}
+
+.btn-check:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* CARD RESULTADO */
+.result-card {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    display: none;
+}
+
+.result-card.show       { display: block; }
+.result-card.oficial    { background: #dcfce7; border: 1px solid #86efac; color: #166534; }
+.result-card.suspeito   { background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; }
+.result-card.desconhecido { background: #f3f4f6; border: 1px solid #d1d5db; color: #374151; }
+.result-card.erro       { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; }
+
+.result-card .icon   { font-size: 22px; margin-bottom: 6px; }
+.result-card .titulo { font-weight: bold; font-size: 14px; margin-bottom: 4px; }
+.result-card .detalhe { font-size: 12px; opacity: 0.85; }
+
+/* LOADING */
+.loading {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 🔙 BOTÃO REPORTAR */
+.report-btn {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background: #c8102e;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.report-btn:hover {
+    background: #a10d25;
+}
+
+
+/* ============================================================
+   TABLET  —  481px a 768px
+   Mantém o mockup, mas um pouco menor e centralizado
+   ============================================================ */
+@media (max-width: 768px) and (min-width: 481px) {
+    .phone {
+        width: 360px;
+        height: 680px;
+        border-radius: 24px;
+    }
+
+    .top-bar {
+        height: 80px;
+    }
+
+    h2 {
+        font-size: 17px;
+    }
+}
+
+
+/* ============================================================
+   MOBILE  —  até 480px
+   Remove o "mockup": ocupa toda a tela como app real
+   ============================================================ */
+@media (max-width: 480px) {
+    body {
+        background: #f8fafc;
+        align-items: flex-start;
+    }
+
+    .phone {
+        width: 100%;
+        height: 100dvh;          /* usa Dynamic Viewport Height */
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .top-bar {
+        height: 70px;
+    }
+
+    .logo {
+        width: 2.5rem;
+    }
+
+    .content {
+        padding: 16px;
+        height: calc(100dvh - 70px);
+    }
+
+    h2 {
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+
+    label {
+        font-size: 12px;
+    }
+
+    input {
+        padding: 11px 10px;
+        font-size: 16px;    /* evita zoom automático do iOS */
+    }
+
+    .btn-check {
+        padding: 14px;
+        font-size: 16px;
+        border-radius: 12px;
+        margin-top: 18px;
+    }
+
+    .result-card {
+        font-size: 14px;
+    }
+
+    .result-card .icon   { font-size: 26px; }
+    .result-card .titulo { font-size: 15px; }
+    .result-card .detalhe { font-size: 13px; }
+
+    .report-btn {
+        bottom: 20px;
+        right: 16px;
+        padding: 10px 16px;
+        font-size: 13px;
+        border-radius: 12px;
+    }
+}

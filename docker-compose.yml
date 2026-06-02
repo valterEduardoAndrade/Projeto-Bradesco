@@ -6,10 +6,13 @@ services:
     container_name: safecall_db
     restart: always
     environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_USER: valter_admin
       POSTGRES_PASSWORD: bradesco_seguro_2026
       POSTGRES_DB: safecall_bradesco
     ports:
-      - "5432:5432"
+      - "5433:5432"
+      
     volumes:
       - ./database:/docker-entrypoint-initdb.d/ # Executa seus scripts .sql automaticamente
+    

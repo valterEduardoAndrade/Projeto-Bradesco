@@ -3,22 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Verificação de Número</title>
-
-    <link rel="stylesheet" href="principal.css">
+    <link rel="stylesheet" href="css/principal.css">
 </head>
-
 <body>
 
     <div class="phone">
 
-        <!-- 🔴 TOP BAR (igual ao reportar) -->
         <div class="top-bar">
             <img src="./img/logo-removebg-preview.png" alt="Bradesco" class="logo">
         </div>
 
-        <!-- 📱 CONTEÚDO -->
         <div class="content">
 
             <h2>Verificar Número</h2>
@@ -30,17 +25,73 @@
                 Verificar
             </button>
 
-            <!-- 📢 RESULTADO -->
-            <p id="resultado" class="result"></p>
+            <div id="resultado" class="result-card"></div>
 
         </div>
 
-        <!-- 🔙 BOTÃO REPORTAR (canto inferior direito) -->
-        <a href="report.html" class="report-btn">
-            Reportar
-        </a>
+        <a href="report.html" class="report-btn">Reportar</a>
 
     </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api'
+
+        const input = document.getElementById('numero')
+        const btn   = document.getElementById('btn-verificar')
+        const card  = document.getElementById('resultado')
+
+        function showCard(tipo, icon, titulo, detalhe) {
+            card.className = `result-card ${tipo} show`
+            card.innerHTML = `
+                <div class="icon">${icon}</div>
+                <div class="titulo">${titulo}</div>
+                <div class="detalhe">${detalhe}</div>
+            `
+        }
+
+        async function verificar() {
+            const numero = input.value.trim()
+
+            if (!numero) {
+                showCard('erro', '⚠️', 'Campo vazio', 'Digite um número para verificar.')
+                return
+            }
+
+            btn.disabled = true
+            btn.innerHTML = '<span class="loading">⏳</span> Verificando...'
+            card.className = 'result-card'
+
+            try {
+                const numeroLimpo = numero.replace(/\D/g, '')
+                const res  = await fetch(`${API_BASE}/verify/${numeroLimpo}`)
+                const data = await res.json()
+
+                if (!res.ok || !data.success) {
+                    showCard('erro', '⚠️', 'Erro na consulta', data.message || 'Tente novamente.')
+                    return
+                }
+
+                if (data.status === 'official') {
+                    showCard('oficial', '✅', 'Número Oficial Bradesco',
+                        `Canal: ${data.data.channel_name || '—'}<br>${data.data.description || ''}`)
+                } else if (data.status === 'suspicious') {
+                    showCard('suspeito', '🚨', 'Número Suspeito!',
+                        `Este número foi reportado <strong>${data.reports}</strong> vez(es) como fraudulento. Não atenda!`)
+                } else {
+                    showCard('desconhecido', '❓', 'Número Desconhecido',
+                        'Não encontrado na base. Se achar suspeito, use o botão <strong>Reportar</strong>.')
+                }
+            } catch (err) {
+                showCard('erro', '⚠️', 'Sem conexão', 'Não foi possível conectar ao servidor. Verifique se o backend está rodando.')
+            } finally {
+                btn.disabled = false
+                btn.textContent = 'Verificar'
+            }
+        }
+
+        btn.addEventListener('click', verificar)
+        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') verificar() })
+    </script>
 
 </body>
 </html>

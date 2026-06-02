@@ -3,54 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Reportar Número</title>
-
-    <link rel="stylesheet" href="report.css">
+    <link rel="stylesheet" href="css/report.css">
 </head>
-
 <body>
 
     <div class="phone">
 
-        <!-- 🔴 TOP BAR -->
         <div class="top-bar">
             <img src="./img/logo-removebg-preview.png" alt="Bradesco" class="logo">
         </div>
 
-        <!-- 📱 CONTEÚDO -->
         <div class="content">
 
             <h2>Reportar Número Suspeito</h2>
 
-            <form>
+            <label>Nome completo</label>
+            <input type="text" id="nome" placeholder="Digite seu nome">
 
-                <label>Nome completo</label>
-                <input type="text" placeholder="Digite seu nome">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="Digite seu email">
 
-                <label>Email</label>
-                <input type="email" placeholder="Digite seu email">
+            <label>Número suspeito</label>
+            <input type="text" id="numero" placeholder="Ex: +55 11 99999-9999">
 
-                <label>Número suspeito</label>
-                <input type="text" placeholder="Ex: +55 11 99999-9999">
+            <label>Mensagem</label>
+            <textarea id="mensagem" placeholder="Descreva o ocorrido..."></textarea>
 
-                <label>Mensagem</label>
-                <textarea placeholder="Descreva o ocorrido..."></textarea>
+            <button id="btn-reportar" class="btn-report">Reportar</button>
 
-                <button type="submit" class="btn-report">
-                    Reportar
-                </button>
-
-            </form>
+            <div id="feedback" class="feedback"></div>
 
         </div>
 
-        <!-- 🔙 BOTÃO VOLTAR -->
-        <a href="principal.html" class="back-btn">
-                ⬅ Voltar
-            </a>
+        <a href="principal.html" class="back-btn">⬅ Voltar</a>
 
     </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api'
+
+        const campos = {
+            nome:     document.getElementById('nome'),
+            email:    document.getElementById('email'),
+            numero:   document.getElementById('numero'),
+            mensagem: document.getElementById('mensagem'),
+        }
+        const btn      = document.getElementById('btn-reportar')
+        const feedback = document.getElementById('feedback')
+
+        function showFeedback(tipo, icon, titulo, detalhe) {
+            feedback.className = `feedback ${tipo}`
+            feedback.innerHTML = `
+                <div class="icon">${icon}</div>
+                <div class="titulo">${titulo}</div>
+                <div>${detalhe}</div>
+            `
+            feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+        }
+
+        function limparErros() {
+            Object.values(campos).forEach(c => c.classList.remove('invalido'))
+        }
+
+        function validar() {
+            let ok = true
+            limparErros()
+
+            if (!campos.nome.value.trim()) { campos.nome.classList.add('invalido'); ok = false }
+
+            const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            if (!emailReg.test(campos.email.value.trim())) { campos.email.classList.add('invalido'); ok = false }
+
+            const numLimpo = campos.numero.value.replace(/\D/g, '')
+            if (numLimpo.length < 8 || numLimpo.length > 20) { campos.numero.classList.add('invalido'); ok = false }
+
+            if (!campos.mensagem.value.trim()) { campos.mensagem.classList.add('invalido'); ok = false }
+
+            return ok
+        }
+
+        async function reportar() {
+            if (!validar()) {
+                showFeedback('erro', '⚠️', 'Campos inválidos', 'Preencha todos os campos corretamente.')
+                return
+            }
+
+            btn.disabled = true
+            btn.textContent = '⏳ Enviando...'
+            feedback.className = 'feedback'
+
+            const body = {
+                name:    campos.nome.value.trim(),
+                email:   campos.email.value.trim().toLowerCase(),
+                phone:   campos.numero.value.replace(/\D/g, ''),
+                message: campos.mensagem.value.trim()
+            }
+
+            try {
+                const res  = await fetch(`${API_BASE}/report`, {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify(body)
+                })
+                const data = await res.json()
+
+                if (res.ok && data.success) {
+                    showFeedback('sucesso', '✅', 'Denúncia registrada!', 'Obrigado por ajudar a proteger a comunidade Bradesco.')
+                    Object.values(campos).forEach(c => c.value = '')
+                } else {
+                    showFeedback('erro', '❌', 'Erro ao enviar', data.message || 'Tente novamente.')
+                }
+            } catch (err) {
+                showFeedback('erro', '⚠️', 'Sem conexão', 'Não foi possível conectar ao servidor. Verifique se o backend está rodando.')
+            } finally {
+                btn.disabled = false
+                btn.textContent = 'Reportar'
+            }
+        }
+
+        btn.addEventListener('click', reportar)
+    </script>
 
 </body>
 </html>
